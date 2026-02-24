@@ -5,14 +5,37 @@
         <div class="mt-3">
           <div class="mt-3">
             <label class="form-label">Name</label>
-            <input type="text" class="form-control" formControlName="name" />
+            <input 
+              type="text" 
+              class="form-control" 
+              formControlName="name" 
+              [class.is-invalid]="nameFormControl.invalid && nameFormControl.touched"
+            />
+            
+            @if (nameFormControl.invalid && nameFormControl.touched) 
+            {
+              <div class="text-danger">
+                {{ getErrorMessagesForName() }}
+              </div>
+            }
           </div> 
           <div class="mt-3">
             <label class="form-label">URL Handle (Slug)</label>
-            <input type="text" class="form-control" formControlName="urlHandle" />
+            <input 
+              type="text" 
+              class="form-control" 
+              formControlName="urlHandle" 
+              [class.is-invalid]="urlHandleFormControl.invalid && urlHandleFormControl.touched"
+            />
+            @if (nameFormControl.invalid && nameFormControl.touched) 
+            {
+              <div class="text-danger">
+                {{ getErrorMessagesForUrlHandle() }}
+              </div>
+            }
           </div> 
           <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button [disabled]="!addCategoryFormGroup.valid" type="submit" class="btn btn-primary">Save</button>
           </div>
         </div>
     </form>
