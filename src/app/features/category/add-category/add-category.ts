@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AddCategoryRequest } from '../models/category.model';
+import { CategoryService } from '../Services/category-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-category',
@@ -10,11 +13,31 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 })
 export class AddCategory 
 {
+  router: Router = inject(Router);
     // 1. import ReactiveFormsModule
     // 2. create form group and form control (FormGroups -> FormControls)
     // 3. bind form group to form element in html
     // 4. bind form controls to input elements in html
     // 5. submit form and get form values
+
+    constructor()
+    {
+        effect(() => 
+        {
+          if(this.categoryService.addCategorySatus() === 'success') 
+          {
+            this.categoryService.addCategorySatus.set('idle');
+            this.router.navigate(['admin/categories']);
+            //console.log('Category added successfully');
+          }
+          if(this.categoryService.addCategorySatus() === 'error') 
+          {
+            console.error('Error adding category');
+          }
+        });
+    }
+
+    private categoryService = inject(CategoryService);
 
     addCategoryFormGroup = new FormGroup({
       name: new FormControl<string>('', { 
@@ -59,9 +82,16 @@ export class AddCategory
       return this.addCategoryFormGroup.controls.urlHandle
     }
 
-    onSubmit() {
-      console.log(this.addCategoryFormGroup.value);
-      console.log(this.addCategoryFormGroup.getRawValue());
+    onSubmit() 
+    {
+      // console.log(this.addCategoryFormGroup.value);
+      const addCategoryFormValue = this.addCategoryFormGroup.getRawValue();
 
+      const addCategoryRequest: AddCategoryRequest = {
+        name: addCategoryFormValue.name,
+        urlHandle: addCategoryFormValue.urlHandle,
+      };
+
+      this.categoryService.addCategory(addCategoryRequest);
     }
 }
